@@ -2,6 +2,7 @@
 #define WINDOW_H
 #include <string>
 #include <SDL2/SDL.h>
+#include "texture.h"
 
 class Window
 {
@@ -9,9 +10,10 @@ class Window
         Window(int width, int height, std::string title);
 
         bool init();
-        void render();
+        void render(Texture texture);
         void free();
 
+        SDL_Renderer* getRenderer();
         int getWidth();
         int getHeight();
         std::string getTitle();

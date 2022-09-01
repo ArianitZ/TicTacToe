@@ -1,4 +1,5 @@
 #include "window.h"
+#include "texture.h"
 
 // Initializes SDL
 bool init(Window* window);
@@ -25,6 +26,15 @@ bool init(Window* window)
         {
             success = false;
         }
+        // Initialize SDL_image
+        else
+        {
+            int imgFlags = IMG_INIT_PNG;
+            if(!IMG_Init(imgFlags))
+            {
+                printf("Unable to initialize SDL_image! SDL_image Error: %s\n", IMG_GetError());
+            }
+        }
     }
 
     return success;
@@ -34,7 +44,9 @@ void close(Window* window)
 {
     printf("Closing down game!\n");
     window->free();
+
     SDL_Quit();
+    IMG_Quit();
 } 
 
 int main(int argc, char* argv[])
@@ -46,6 +58,9 @@ int main(int argc, char* argv[])
 
     if(init(&window))
     {   
+        Texture x_texture = Texture();
+        x_texture.loadFromFile("assets/o.png", window.getRenderer());
+        
         bool quit = false;
 
         SDL_Event event;
@@ -60,7 +75,7 @@ int main(int argc, char* argv[])
                 }
             }
 
-            window.render();
+            window.render(x_texture);
         }
     }
     close(&window);

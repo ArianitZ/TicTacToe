@@ -32,12 +32,18 @@ bool Window::init()
     return true;
 }
 
-void Window::render()
+void Window::render(Texture texture)
 {
     if(mRenderer!=NULL)
     {
         SDL_RenderClear(mRenderer);
+        texture.render(0,0, mRenderer);
+        texture.render(0,64, mRenderer);
         SDL_RenderPresent(mRenderer);
+    }
+    else
+    {
+        printf("Renderer has not been initialized, cannot render!");
     }
 }
 
@@ -54,6 +60,11 @@ void Window::free()
         SDL_DestroyRenderer(mRenderer);
         mRenderer = NULL;
     }
+}
+
+SDL_Renderer* Window::getRenderer()
+{
+    return mRenderer;
 }
 
 int Window::getHeight()

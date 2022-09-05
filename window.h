@@ -1,8 +1,9 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 #include <string>
+#include <vector>
 #include <SDL2/SDL.h>
-#include "texture.h"
+#include "player.h"
 
 class Window
 {
@@ -10,7 +11,7 @@ class Window
         Window(int width, int height, std::string title);
 
         bool init();
-        void render(Texture texture);
+        void render(std::vector<Player> players);
         void free();
 
         SDL_Renderer* getRenderer();

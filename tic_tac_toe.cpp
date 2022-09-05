@@ -1,5 +1,6 @@
 #include "window.h"
 #include "texture.h"
+#include "player.h"
 
 // Initializes SDL
 bool init(Window* window);
@@ -51,16 +52,22 @@ void close(Window* window)
 
 int main(int argc, char* argv[])
 {    
-    int screen_height = 400;
-    int screen_width = 600;
+    int screen_height = 193;
+    int screen_width = 193;
     std::string window_title = "Tic Tac Toe";
     Window window = Window(screen_width, screen_height, window_title);
 
     if(init(&window))
     {   
         Texture x_texture = Texture();
-        x_texture.loadFromFile("assets/o.png", window.getRenderer());
+        Texture o_texture = Texture();
+
+        x_texture.loadFromFile("assets/x.png", window.getRenderer());
+        o_texture.loadFromFile("assets/o.png", window.getRenderer());
         
+        // TODO Assign randomly x/o textures to players
+        std::vector<Player> players = {Player(x_texture), Player(o_texture)};
+        players[0].addPosition(0,0);
         bool quit = false;
 
         SDL_Event event;
@@ -75,7 +82,7 @@ int main(int argc, char* argv[])
                 }
             }
 
-            window.render(x_texture);
+            window.render(players);
         }
     }
     close(&window);

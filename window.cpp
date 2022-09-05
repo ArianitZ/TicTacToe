@@ -32,13 +32,15 @@ bool Window::init()
     return true;
 }
 
-void Window::render(Texture texture)
+void Window::render(std::vector<Player> players)
 {
     if(mRenderer!=NULL)
     {
         SDL_RenderClear(mRenderer);
-        texture.render(0,0, mRenderer);
-        texture.render(0,64, mRenderer);
+        for(int i{0}; i < players.size(); ++i)
+        {
+            players[i].render(mRenderer);
+        }
         SDL_RenderPresent(mRenderer);
     }
     else

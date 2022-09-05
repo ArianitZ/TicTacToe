@@ -4,7 +4,7 @@ COMPILER_FLAGS = -g
 
 LINKER_FLAGS = -lSDL2 -lSDL2_image
 
-DEPS = tic_tac_toe.cpp window.cpp texture.cpp
+DEPS = tic_tac_toe.cpp window.cpp texture.cpp player.cpp game.cpp
 
 OUTPUT = tic_tac_toe.o
 

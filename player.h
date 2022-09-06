@@ -4,10 +4,20 @@
 #include <SDL2/SDL.h>
 #include <vector>
 
-struct Point
-{
-    int x{};
-    int y{};
+class Point
+{   
+    public:
+        Point(int x, int y);
+
+        int getX();
+        int getY();
+
+        bool operator< (const Point& pointObj);
+
+    private:
+        int mX{};
+        int mY{};
+
 };
 
 class Player

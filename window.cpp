@@ -27,19 +27,19 @@ bool Window::init()
         // TODO: call free() to destroy Window if renderer is not successfully created?
         return false;
     }
-
     SDL_SetRenderDrawColor(mRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
     return true;
 }
 
-void Window::render(std::vector<Player> players)
+// TODO: Make this function depend on an interface having a render fcn
+void Window::render(std::vector<Player*> players)
 {
     if(mRenderer!=NULL)
     {
         SDL_RenderClear(mRenderer);
         for(int i{0}; i < players.size(); ++i)
         {
-            players[i].render(mRenderer);
+            players[i]->render(mRenderer);
         }
         SDL_RenderPresent(mRenderer);
     }

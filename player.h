@@ -12,8 +12,6 @@ class Point
         int getX();
         int getY();
 
-        bool operator< (const Point& pointObj);
-
     private:
         int mX{};
         int mY{};

@@ -11,7 +11,7 @@ class Window
         Window(int width, int height, std::string title);
 
         bool init();
-        void render(std::vector<Player> players);
+        void render(std::vector<Player*> players);
         void free();
 
         SDL_Renderer* getRenderer();

@@ -16,10 +16,6 @@ int Point::getY()
     return mY;
 }
 
-bool Point::operator< (const Point& pointObj)
-{
-    return ( (this->mX+ this->mY) > (pointObj.mX + pointObj.mY) );
-}
 
 Player::Player(Texture texture)
 {

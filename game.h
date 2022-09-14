@@ -7,6 +7,7 @@
 #include "texture.h"
 #include "cstdlib"
 #include "memory"
+#include <time.h>
 
 class Game
 {
@@ -51,6 +52,7 @@ class Game
         std::unique_ptr<Player> m_player;
         std::unique_ptr<Player> m_npc;
 
+        bool checkForWin();
 
 };
 

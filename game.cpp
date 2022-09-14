@@ -5,7 +5,7 @@ Game::Game(int screen_width, int screen_height)
 {
     m_screen_width = screen_width;
     m_screen_height = screen_height;
-    m_cell_size = m_screen_height/3;
+    m_cell_size = m_screen_height/grid_size;
 
     m_window.reset(new Window(screen_width, screen_height, m_window_title));
 }
@@ -55,6 +55,9 @@ void Game::loadMedia()
 
 void Game::assignTextures()
 {
+    // Initialize seed
+    std::srand(time(NULL));    
+    
     int tmp{std::rand()%2};
     if(tmp)
     {
@@ -102,10 +105,48 @@ void Game::handleEvents()
         m_player -> addPosition(m_cell_size*x, m_cell_size*y);
         printf("Added position (%d, %d)\n", x, y);
     }
+
+    if(checkForWin())
+    {
+        m_game_over = true;
+    }
 }
 
 bool Game::gameOver()
 {
     return m_game_over;
+}
+
+bool Game::checkForWin()
+{
+    // Check all rows and columns
+    for(int i{0}; i<grid_size; i++)
+    {
+        int col{0}, row{0};
+        for(int j{0}; j<grid_size; j++)
+        {
+            col += m_positions[i][j];
+            row += m_positions[j][i];
+            if(col > 2 || row > 2)
+            {
+                return true;
+            }
+        }
+    }
+
+    // Check diagonals
+    int diag1{0};
+    int diag2{0};
+    for(int i{0}; i<grid_size; i++)
+    {
+        diag1 += m_positions[i][i];
+        diag2 += m_positions[grid_size-1-i][i];
+        if(diag1 > 2 || diag2 > 2)
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
 

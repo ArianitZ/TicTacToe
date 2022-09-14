@@ -12,4 +12,4 @@ tic_tac_toe: ${DEPS}
 	${CC} ${COMPILER_FLAGS} ${DEPS} ${LINKER_FLAGS} -o ${OUTPUT}
 
 clean:
-	rm -f tic_tac_toe.o
+	rm -f *.o

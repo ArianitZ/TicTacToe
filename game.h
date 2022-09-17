@@ -38,7 +38,8 @@ class Game
         bool m_computers_turn{false};
         bool m_game_over{false};
         
-        std::array<std::array<bool, grid_size>, grid_size> m_positions{};
+        // 0 = empty, 1 = o, -1 = x
+        std::array<std::array<int, grid_size>, grid_size> m_positions{};
         std::string m_window_title = "Tic Tac Toe";
 
         std::string m_x_file_path = "assets/x.png";
@@ -53,6 +54,8 @@ class Game
         std::unique_ptr<Player> m_npc;
 
         bool checkForWin();
+        Point chooseRandomPosition();
+        void addPosition(Player* player, int x=-1, int y=-1);
 
 };
 

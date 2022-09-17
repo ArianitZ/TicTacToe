@@ -3,6 +3,7 @@
 #include "texture.h"
 #include <SDL2/SDL.h>
 #include <vector>
+#include <string>
 
 class Point
 {   
@@ -21,7 +22,7 @@ class Point
 class Player
 {
     public:
-        Player(Texture texture);
+        Player(Texture texture, std::string marker_type);
 
         void render(SDL_Renderer* renderer);
 
@@ -31,9 +32,11 @@ class Player
 
         Texture* getTexture();
         
+        std::string getMarkerType();
 
     private:
         Texture mTexture;
+        std::string m_marker_type;
         std::vector<Point> mPositions;
 
 };

@@ -17,9 +17,10 @@ int Point::getY()
 }
 
 
-Player::Player(Texture texture)
+Player::Player(Texture texture, std::string marker_type)
 {
     mTexture = texture;
+    m_marker_type = marker_type;
 }
 
 void Player::render(SDL_Renderer* renderer)
@@ -45,4 +46,9 @@ std::vector<Point>* Player::getPositions()
 Texture* Player::getTexture()
 {
     return (&mTexture);
+}
+
+std::string Player::getMarkerType()
+{
+    return m_marker_type;
 }

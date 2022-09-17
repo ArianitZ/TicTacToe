@@ -61,13 +61,13 @@ void Game::assignTextures()
     int tmp{std::rand()%2};
     if(tmp)
     {
-        m_player.reset(new Player(m_x_texture));
-        m_npc.reset(new Player(m_o_texture));
+        m_player.reset(new Player(m_x_texture, "x"));
+        m_npc.reset(new Player(m_o_texture, "o"));
     }
     else
     {
-        m_player.reset(new Player(m_o_texture));
-        m_npc.reset(new Player(m_x_texture));
+        m_player.reset(new Player(m_o_texture, "o"));
+        m_npc.reset(new Player(m_x_texture, "x"));
     }
 }
 
@@ -94,6 +94,7 @@ void Game::handleEvents()
         else if (event.type == SDL_MOUSEBUTTONUP)
         {
             mouse_event = true;
+            // Transform from window coordinates to grid coordinates
             x = event.button.x / m_cell_size;
             y = event.button.y / m_cell_size;
         }
@@ -101,14 +102,13 @@ void Game::handleEvents()
 
     if(mouse_event && !m_positions[x][y])
     {
-        m_positions[x][y] = true;
-        m_player -> addPosition(m_cell_size*x, m_cell_size*y);
-        printf("Added position (%d, %d)\n", x, y);
-    }
-
-    if(checkForWin())
-    {
-        m_game_over = true;
+        addPosition(m_player.get(), x, y);
+        addPosition(m_npc.get(), -1, -1);
+    
+        if(checkForWin())
+        {
+            m_game_over = true;
+        }
     }
 }
 
@@ -122,31 +122,72 @@ bool Game::checkForWin()
     // Check all rows and columns
     for(int i{0}; i<grid_size; i++)
     {
-        int col{0}, row{0};
+        int col_sum{0}, row_sum{0};
+        int col_prev{m_positions[i][i]};
+        int row_prev{m_positions[i][i]};
         for(int j{0}; j<grid_size; j++)
         {
-            col += m_positions[i][j];
-            row += m_positions[j][i];
-            if(col > 2 || row > 2)
+            int col_curr = m_positions[i][j];
+            int row_curr = m_positions[j][i];
+            col_sum += (col_curr == col_prev) ? col_curr : 0;
+            row_sum += (row_curr == row_prev) ? row_curr : 0;
+            if(std::abs(col_sum) == grid_size || std::abs(row_sum) == grid_size)
             {
                 return true;
             }
+            col_prev = col_curr;
+            row_prev = row_curr;
         }
     }
 
     // Check diagonals
-    int diag1{0};
-    int diag2{0};
+    int diag1_sum{0};
+    int diag2_sum{0};
+    int diag1_prev{m_positions[0][0]};
+    int diag2_prev{m_positions[grid_size-1][0]};
     for(int i{0}; i<grid_size; i++)
     {
-        diag1 += m_positions[i][i];
-        diag2 += m_positions[grid_size-1-i][i];
-        if(diag1 > 2 || diag2 > 2)
+        int diag1_curr{m_positions[i][i]};
+        int diag2_curr{m_positions[grid_size-1-i][i]};
+        diag1_sum += (diag1_prev == diag1_curr) ? diag1_curr : 0;
+        diag2_sum += (diag2_prev == diag2_curr) ? diag2_curr : 0;
+        if(std::abs(diag1_sum) == grid_size || std::abs(diag2_sum) == grid_size)
         {
             return true;
         }
+        diag1_prev = diag1_curr;
+        diag2_prev = diag2_curr;
     }
 
     return false;
 }
 
+Point Game::chooseRandomPosition()
+{
+    int x{std::rand() % grid_size};
+    int y{std::rand() % grid_size};
+    while(m_positions[x][y])
+    {
+        x = std::rand() % grid_size;
+        y = std::rand() % grid_size;
+    }
+    printf("Random position: (%d,%d)\n",x,y);
+    return Point(x,y);
+}
+
+void Game::addPosition(Player* player, int x, int y)
+{
+    std::string marker{player -> getMarkerType()};
+    int marker_type{marker == "o" ? 1 : -1};
+    if(x != -1 && y != -1)
+    {
+        m_positions[x][y] = marker_type;
+        player -> addPosition(m_cell_size*x, m_cell_size*y);
+    }
+    else
+    {
+        Point new_position = chooseRandomPosition();
+        m_positions[new_position.getX()][new_position.getY()] = marker_type;
+        player -> addPosition(m_cell_size*new_position.getX(), m_cell_size*new_position.getY());
+    }
+}

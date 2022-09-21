@@ -18,15 +18,15 @@ class Game
 
         void close();
 
-        void loadMedia();
+        void load_media();
 
-        void assignTextures();
+        void assign_textures();
 
-        void render();
+        void render_all();
 
-        void handleEvents();
+        void handle_events();
 
-        bool gameOver();
+        bool game_over();
 
         static const int grid_size{3};
         
@@ -44,18 +44,22 @@ class Game
 
         std::string m_x_file_path = "assets/x.png";
         std::string m_o_file_path = "assets/o.png";
+        std::string m_grid_file_path = "assets/grid.png";
 
         Texture m_x_texture;
         Texture m_o_texture;
+        Texture m_grid_texture;
 
         std::unique_ptr<Window> m_window;
         
         std::unique_ptr<Player> m_player;
         std::unique_ptr<Player> m_npc;
 
-        bool checkForWin();
-        Point chooseRandomPosition();
-        void addPosition(Player* player, int x=-1, int y=-1);
+        bool check_for_win();
+        bool check_for_draw();
+        void add_random_position(Player* player);
+        void add_position(Player* player, int x=-1, int y=-1);
+        void render_new_markers();
 
 };
 

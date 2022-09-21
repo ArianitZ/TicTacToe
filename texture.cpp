@@ -20,6 +20,8 @@ bool Texture::loadFromFile(std::string path, SDL_Renderer* renderer)
         return false;
     }
 
+    // Color key image. Make white pixels transparent.
+    SDL_SetColorKey(tmp_surface, SDL_TRUE, SDL_MapRGB(tmp_surface->format, 0xFF, 0xFF, 0xFF));
     mTexture = SDL_CreateTextureFromSurface(renderer, tmp_surface);
     if(mTexture == NULL)
     {

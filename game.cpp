@@ -1,6 +1,5 @@
 #include "game.h"
 
-// TODO: Validate inputs (screen_width==scren_height)
 Game::Game(int screen_width, int screen_height)
 {
     m_screen_width = screen_width;
@@ -38,25 +37,24 @@ void Game::close()
     printf("Closing down game!\n");
     m_o_texture.free();
     m_x_texture.free();
+    m_grid_texture.free();
     m_window->free();
 
     SDL_Quit();
     IMG_Quit();
 }
 
-void Game::loadMedia()
+void Game::load_media()
 {
-    m_x_texture = Texture();
-    m_o_texture = Texture();
-
     m_x_texture.loadFromFile(m_x_file_path, m_window->getRenderer());
     m_o_texture.loadFromFile(m_o_file_path, m_window->getRenderer());
+    m_grid_texture.loadFromFile(m_grid_file_path, m_window->getRenderer());
 }
 
-void Game::assignTextures()
+void Game::assign_textures()
 {
     // Initialize seed
-    std::srand(time(NULL));    
+    std::srand(time(NULL));
     
     int tmp{std::rand()%2};
     if(tmp)
@@ -71,15 +69,36 @@ void Game::assignTextures()
     }
 }
 
-void Game::render()
+void Game::render_all()
 {
-    std::vector<Player*> tmp;
+    m_window->render_clear();
+    m_window->render_single_object(&m_grid_texture, 0, 0);
+
+    std::vector<IRenderable*> tmp;
     tmp.push_back(m_player.get());
     tmp.push_back(m_npc.get());
     m_window->render(tmp);
+
+    m_window->render_present();
 }
 
-void Game::handleEvents()
+void Game::render_new_markers()
+{
+    for(Point point : (m_player.get()->getPositions()))
+    {
+        m_window->render_single_object(m_player.get()->getTexture(), point.getX(), point.getY());
+    }
+    m_window->render_present();
+
+    SDL_Delay(300); // For visual effect, so that npc markers are not displayed too quick
+    for(Point point : (m_npc.get()->getPositions()))
+    {
+        m_window->render_single_object(m_npc.get()->getTexture(), point.getX(), point.getY());
+    }
+    m_window->render_present();
+}
+
+void Game::handle_events()
 {
     SDL_Event event;
     bool mouse_event{false};
@@ -102,22 +121,35 @@ void Game::handleEvents()
 
     if(mouse_event && !m_positions[x][y])
     {
-        addPosition(m_player.get(), x, y);
-        addPosition(m_npc.get(), -1, -1);
+        add_position(m_player.get(), x, y);
     
-        if(checkForWin())
+        if(check_for_win() || check_for_draw())
         {
             m_game_over = true;
         }
+        else
+        {
+            add_random_position(m_npc.get());
+            if(check_for_win() || check_for_draw())
+            {
+                m_game_over = true;
+            }    
+        }
+        render_new_markers();
+    }
+
+    if(game_over())
+    {
+        SDL_Delay(1000);
     }
 }
 
-bool Game::gameOver()
+bool Game::game_over()
 {
     return m_game_over;
 }
 
-bool Game::checkForWin()
+bool Game::check_for_win()
 {
     // Check all rows and columns
     for(int i{0}; i<grid_size; i++)
@@ -162,8 +194,20 @@ bool Game::checkForWin()
     return false;
 }
 
-Point Game::chooseRandomPosition()
+bool Game::check_for_draw()
 {
+    int n_player_markers = m_player.get()->getPositions().size();
+    int n_npc_markers = m_npc.get()->getPositions().size();
+    int total_markers = n_player_markers + n_npc_markers;
+
+    return total_markers == (grid_size*grid_size);
+}
+
+void Game::add_random_position(Player* player)
+{
+    std::string marker{player -> getMarkerType()};
+    int marker_type{marker == "o" ? 1 : -1};
+
     int x{std::rand() % grid_size};
     int y{std::rand() % grid_size};
     while(m_positions[x][y])
@@ -171,23 +215,16 @@ Point Game::chooseRandomPosition()
         x = std::rand() % grid_size;
         y = std::rand() % grid_size;
     }
-    printf("Random position: (%d,%d)\n",x,y);
-    return Point(x,y);
+
+    m_positions[x][y] = marker_type;
+    player -> addPosition(m_cell_size*x+x, m_cell_size*y+y);
 }
 
-void Game::addPosition(Player* player, int x, int y)
+void Game::add_position(Player* player, int x, int y)
 {
     std::string marker{player -> getMarkerType()};
     int marker_type{marker == "o" ? 1 : -1};
-    if(x != -1 && y != -1)
-    {
-        m_positions[x][y] = marker_type;
-        player -> addPosition(m_cell_size*x, m_cell_size*y);
-    }
-    else
-    {
-        Point new_position = chooseRandomPosition();
-        m_positions[new_position.getX()][new_position.getY()] = marker_type;
-        player -> addPosition(m_cell_size*new_position.getX(), m_cell_size*new_position.getY());
-    }
+
+    m_positions[x][y] = marker_type;
+    player -> addPosition(m_cell_size*x+x, m_cell_size*y+y);
 }

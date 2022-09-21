@@ -1,9 +1,8 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 #include "texture.h"
-#include <SDL2/SDL.h>
+#include "renderable.h"
 #include <vector>
-#include <string>
 
 class Point
 {   
@@ -14,12 +13,12 @@ class Point
         int getY();
 
     private:
-        int mX{};
-        int mY{};
+        int m_x{};
+        int m_y{};
 
 };
 
-class Player
+class Player : public IRenderable
 {
     public:
         Player(Texture texture, std::string marker_type);
@@ -28,16 +27,16 @@ class Player
 
         void addPosition(int x, int y);
     
-        std::vector<Point>* getPositions();
+        std::vector<Point> getPositions();
 
         Texture* getTexture();
         
         std::string getMarkerType();
 
     private:
-        Texture mTexture;
+        Texture m_texture;
         std::string m_marker_type;
-        std::vector<Point> mPositions;
+        std::vector<Point> m_positions;
 
 };
 

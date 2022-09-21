@@ -24,24 +24,56 @@ bool Window::init()
     if (mRenderer == NULL)
     {
         printf("Failed to create renderer! SDL Error: %s\n", SDL_GetError());
-        // TODO: call free() to destroy Window if renderer is not successfully created?
         return false;
     }
     SDL_SetRenderDrawColor(mRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
     return true;
 }
 
-// TODO: Make this function depend on an interface having a render fcn
-void Window::render(std::vector<Player*> players)
+void Window::render_clear()
 {
     if(mRenderer!=NULL)
     {
         SDL_RenderClear(mRenderer);
-        for(int i{0}; i < players.size(); ++i)
+    }
+    else
+    {
+        printf("Renderer has not been initialized, cannot clear render!");
+    }
+}
+
+void Window::render(std::vector<IRenderable*> rendering_objects)
+{
+    if(mRenderer!=NULL)
+    {
+        for(int i{0}; i < rendering_objects.size(); ++i)
         {
-            players[i]->render(mRenderer);
+            rendering_objects[i]->render(mRenderer);
         }
+    }
+    else
+    {
+        printf("Renderer has not been initialized, cannot render!");
+    }
+}
+
+void Window::render_present()
+{
+    if(mRenderer!=NULL)
+    {
         SDL_RenderPresent(mRenderer);
+    }
+    else
+    {
+        printf("Renderer has not been initialized, cannot render to screen!");
+    }
+}
+
+void Window::render_single_object(Texture* texture_object, int x, int y)
+{
+    if(mRenderer!=NULL)
+    {
+        texture_object->render(x,y, mRenderer);
     }
     else
     {
